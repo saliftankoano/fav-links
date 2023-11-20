@@ -1,0 +1,22 @@
+#all{
+  width: 80%;
+  display: flexbox;
+  margin-left: 10%;
+}
+
+#tb-header{
+  border-color: black;
+}
+#btn{
+  color: white;
+  background-color: #0167ee;
+  border: 20%;
+}
+
+#links{
+  color: #0167ee;
+}
+
+td{
+  width: 30%;
+}
