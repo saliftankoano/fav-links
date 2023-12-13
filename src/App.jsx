@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
@@ -32,7 +32,27 @@ function App() {
   const handleDeleteRow = (index) =>{
     setTableData((prevData) => prevData.filter((_, i) => i !== index));
   }
+  const postLinks = async ()=>{
+    let testLink = {name: 'Test 12.12.2023', url: 'www.test.com'};
+    try {
+      let response = await fetch('/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(testLink)
+      });
+      console.log(response);
+      let message = response.text();
+      console.log(message);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
+  useEffect(()=>{
+    postLinks()
+  }, [])
   return (
     <div id='all'>
       <h1>My Favorite Links</h1>
