@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
   const [tableData, setTableData]= useState([]);
 
   const [formData, setFormData]= useState({
-    linkName: 'Default',
-    linkURL: 'Default Url'
+    linkName: 'Salif',
+    linkURL: 'https://saliftankoano.com'
   });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -15,10 +16,48 @@ function App() {
       [name]: value,
     }));
   };
+  const getLinks = async () => {
+    try {
+      // make a request to our server to get the links
+      const response = await fetch('/api/links')
+      // convert the response to json
+      const data = await response.json()
+      // Use the data
+      setTableData(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  useEffect(()=>{
+    getLinks()
+  }, [])
 
   const handleForm = (e) => {
     e.preventDefault();
+    // Through our server send Link --> Database
+    const postLink = async ()=>{
+      let link = {name: formData.linkName, url: formData.linkURL};
 
+      try {
+        console.log(formData);
+        let response = await fetch('/api/links', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(link)
+        });
+        let message = response.text();
+        console.log(message);
+        // After Link was successfully added Get all the links in the database
+        getLinks();
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    postLink();
+    
     // Add the new row to the tableData state
     setTableData((prevData) => [...prevData, formData]);
 
@@ -28,31 +67,18 @@ function App() {
       linkURL: '',
       // Reset other form fields as needed
     });
+
   };
+
   const handleDeleteRow = (index) =>{
     setTableData((prevData) => prevData.filter((_, i) => i !== index));
   }
-  const postLinks = async ()=>{
-    let testLink = {name: 'Test 12.12.2023', url: 'www.test.com'};
-    try {
-      let response = await fetch('/new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testLink)
-      });
-      console.log(response);
-      let message = response.text();
-      console.log(message);
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
-  useEffect(()=>{
-    postLinks()
-  }, [])
+  
+  
+
+ 
+
   return (
     <div id='all'>
       <h1>My Favorite Links</h1>
@@ -62,15 +88,15 @@ function App() {
             <tr id='tb-header'>
                 <th>Name</th>
                 <th>URL</th>
-                <th>Remove</th>
+                <th id='deleteCol'>Delete</th>
             </tr>
         </thead>
         <tbody>
-          {tableData.map((row, index) => (
-            <tr key={index}>
-              <td id='linkName'>{row.linkName}</td>
-              <td id='linkUrl'><a  href={row.linkURL}>{row.linkURL}</a></td>
-              <td><button onClick={()=> handleDeleteRow(index)} id='btn'>Delete</button></td>
+          {tableData.map( tableData => (
+            <tr key={tableData.id}>
+              <td id='linkName'>{tableData.name}</td>
+              <td id='linkUrl'><a  href={tableData.url}>{tableData.url}</a></td>
+              <td id='deleteCol'><button onClick={()=> handleDeleteRow(tableData.id)} id='btn'>Delete</button></td>
               {/* Add other table cells as needed */}
             </tr>
           ))}
