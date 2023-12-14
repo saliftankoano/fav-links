@@ -70,8 +70,18 @@ function App() {
 
   };
 
-  const handleDeleteRow = (index) =>{
-    setTableData((prevData) => prevData.filter((_, i) => i !== index));
+  const handleDeleteLink = async (id) =>{
+    try {
+      let response = await fetch(`/api/links/${id}`, {
+        method: 'DELETE'
+      })
+      let message = await response.text();
+      console.log(message);
+      getLinks()
+    } catch (error) {
+      console.log(error);
+    }
+    // setTableData((prevData) => prevData.filter((_, i) => i !== index));
   }
 
   
@@ -96,7 +106,7 @@ function App() {
             <tr key={tableData.id}>
               <td id='linkName'>{tableData.name}</td>
               <td id='linkUrl'><a  href={tableData.url}>{tableData.url}</a></td>
-              <td id='deleteCol'><button onClick={()=> handleDeleteRow(tableData.id)} id='btn'>Delete</button></td>
+              <td id='deleteCol'><button onClick={()=> handleDeleteLink(tableData.id)} id='btn'>Delete</button></td>
               {/* Add other table cells as needed */}
             </tr>
           ))}
